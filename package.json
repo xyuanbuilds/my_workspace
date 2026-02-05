@@ -1,28 +1,26 @@
 {
-  "name": "ocr-skill",
+  "name": "my-skills",
   "version": "1.0.0",
-  "description": "Claude Code Skill for OCR - supports local files and clipboard",
-  "main": "dist/index.js",
+  "description": "Claude Code Skills collection",
   "type": "module",
   "scripts": {
-    "build": "tsc && cp dist/cli.js dist/clipboard.js dist/ocr.js .claude/skills/ocr/scripts/",
-    "dev": "tsc --watch",
-    "ocr": "node dist/cli.js",
-    "mcp": "node dist/mcp-server.js"
-  },
-  "bin": {
-    "ocr": "dist/cli.js"
+    "build": "npm run build:ocr && npm run sync",
+    "build:ocr": "tsc -p skills/ocr/tsconfig.json",
+    "dev:ocr": "tsc -p skills/ocr/tsconfig.json --watch",
+    "sync": "node scripts/sync-skills.js",
+    "sync:ocr": "node scripts/sync-skills.js ocr",
+    "ocr:cli": "node skills/ocr/dist/cli.js",
+    "ocr:mcp": "node skills/ocr/dist/mcp-server.js"
   },
   "keywords": [
     "claude-code",
-    "skill",
-    "ocr",
-    "tesseract"
+    "skills"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "canvas": "^3.2.1",
     "tesseract.js": "^5.1.0"
   },
   "devDependencies": {
