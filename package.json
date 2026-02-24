@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "build": "npm run build:ocr && npm run sync",
-    "build:ocr": "tsc -p skills/ocr/tsconfig.json",
-    "dev:ocr": "tsc -p skills/ocr/tsconfig.json --watch",
+    "build:ocr": "tsc -p dev/ocr/tsconfig.json",
+    "dev:ocr": "tsc -p dev/ocr/tsconfig.json --watch",
     "sync": "node scripts/sync-skills.js",
     "sync:ocr": "node scripts/sync-skills.js ocr",
-    "ocr:cli": "node skills/ocr/dist/cli.js",
-    "ocr:mcp": "node skills/ocr/dist/mcp-server.js"
+    "ocr:cli": "node dev/ocr/dist/cli.js",
+    "ocr:mcp": "node dev/ocr/dist/mcp-server.js"
   },
   "keywords": [
     "claude-code",

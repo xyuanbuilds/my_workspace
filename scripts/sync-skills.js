@@ -13,8 +13,10 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
-const skillsDir = path.join(rootDir, "skills");
+const skillsDir = path.join(rootDir, "dev");
 const claudeSkillsDir = path.join(rootDir, ".claude", "skills");
+const localSkillsDir = path.join(rootDir, "skills");
+const agentsSkillsDir = path.join(rootDir, ".agents", "skills");
 
 // Files to sync for each skill (only these files will be copied)
 // If a skill is not listed here, all .js files will be synced
@@ -22,17 +24,7 @@ const SKILL_FILES = {
   ocr: ["ocr.js", "preprocessor.js", "clipboard.js", "cli.js", "utils.js"],
 };
 
-function syncSkill(skillName) {
-  const skillDistDir = path.join(skillsDir, skillName, "dist");
-  const targetDir = path.join(claudeSkillsDir, skillName, "scripts");
-
-  // Check if skill dist exists
-  if (!fs.existsSync(skillDistDir)) {
-    console.error(`❌ Skill "${skillName}" dist not found at: ${skillDistDir}`);
-    console.error(`   Run "npm run build:${skillName}" first.`);
-    return false;
-  }
-
+function syncFiles(skillName, skillDistDir, targetDir) {
   // Ensure target directory exists
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
@@ -62,9 +54,48 @@ function syncSkill(skillName) {
     syncedCount++;
   }
 
-  console.log(
-    `✅ Synced "${skillName}": ${syncedCount} files → .claude/skills/${skillName}/scripts/`,
-  );
+  return syncedCount;
+}
+
+function syncSkill(skillName) {
+  const skillDistDir = path.join(skillsDir, skillName, "dist");
+
+  // Check if skill dist exists
+  if (!fs.existsSync(skillDistDir)) {
+    console.error(`❌ Skill "${skillName}" dist not found at: ${skillDistDir}`);
+    console.error(`   Run "npm run build:${skillName}" first.`);
+    return false;
+  }
+
+  const targets = [
+    { root: claudeSkillsDir, label: ".claude/skills" },
+    { root: localSkillsDir, label: "skills" },
+    { root: agentsSkillsDir, label: ".agents/skills" },
+  ];
+
+  for (const { root, label } of targets) {
+    const skillRootDir = path.join(root, skillName);
+    const scriptsDir = path.join(skillRootDir, "scripts");
+    const count = syncFiles(skillName, skillDistDir, scriptsDir);
+
+    // Sync SKILL.md to skill root
+    const skillMdSrc = path.join(skillsDir, skillName, "SKILL.md");
+    if (fs.existsSync(skillMdSrc)) {
+      if (!fs.existsSync(skillRootDir)) {
+        fs.mkdirSync(skillRootDir, { recursive: true });
+      }
+      fs.copyFileSync(skillMdSrc, path.join(skillRootDir, "SKILL.md"));
+    }
+
+    // Sync src/package.json to scripts/
+    const pkgJsonSrc = path.join(skillsDir, skillName, "src", "package.json");
+    if (fs.existsSync(pkgJsonSrc)) {
+      fs.copyFileSync(pkgJsonSrc, path.join(scriptsDir, "package.json"));
+    }
+
+    console.log(`✅ Synced "${skillName}": ${count} files + SKILL.md + package.json → ${label}/${skillName}/`);
+  }
+
   return true;
 }
 
@@ -86,7 +117,7 @@ function getAllSkills() {
 const args = process.argv.slice(2);
 const specificSkill = args[0];
 
-console.log("🔄 Syncing skills to .claude/skills/...\n");
+console.log("🔄 Syncing skills to .claude/skills/, skills/, .agents/skills/...\n");
 
 if (specificSkill) {
   // Sync specific skill
