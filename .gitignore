@@ -3,9 +3,6 @@ node_modules
 # Build outputs (each skill has its own dist)
 dev/*/dist
 
-# Keep .claude skill scripts
-!.claude/**/dist
-
 # Tesseract language data
 *.traineddata
 *.traineddata.gz
@@ -13,3 +10,4 @@ dev/*/dist
 # local test
 .agents
 .claude
+!.claude/settings.json
