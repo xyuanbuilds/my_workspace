@@ -2,11 +2,18 @@
   "hooks": {
     "Stop": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
             "command": "node \".claude/scripts/record-response.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \".claude/scripts/debug.js\""
           }
         ]
       }
@@ -28,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact.js\""
+            "command": "node \"scripts/hooks/pre-compact.js\""
           }
         ]
       }
@@ -39,11 +46,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \\\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/suggest-compact.js\\\""
+            "command": "node \"scripts/hooks/suggest-compact.js\""
           }
         ]
       }
     ]
-  },
-  "enabledPlugins": {}
+  }
 }

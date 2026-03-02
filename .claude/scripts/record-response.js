@@ -16,15 +16,73 @@ process.stdin.on("data", (chunk) => {
 
 process.stdin.on("end", () => {
   try {
+    // 处理空数据
+    if (!inputData.trim()) {
+      console.log("{}");
+      return;
+    }
+
     // 解析 hook 数据
     const hookData = JSON.parse(inputData);
+    const { session_id, transcript_path, last_assistant_message } = hookData;
+
+    // 确保会话目录存在
+    const sessionsDir = path.join(process.cwd(), ".claude", "sessions");
+    if (!fs.existsSync(sessionsDir)) {
+      fs.mkdirSync(sessionsDir, { recursive: true });
+    }
+
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/T/, "-").replace(/:/g, "-");
+    const filename = `session-${timestamp}.md`;
+
+    /**
+     * ! 直接使用 last_assistant_message，如果存在的话，优先记录这个内容，因为它已经是处理过的最终回答了
+     * 部分情况下是没有这个字段的，且如果有这个字段不拿，而去解析 transcript_path 反而可能拿到旧的回答，所以优先使用 last_assistant_message
+     */
+    if (last_assistant_message) {
+      // 生成时间戳文件名
+
+      // 构建 markdown 内容
+      const markdown = `
+**时间**: ${now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}
+**文件**: ${filename}
+**session**: ${session_id}
+---
+
+${last_assistant_message}
+`;
+
+      // 保存文件
+      const filepath = path.join(sessionsDir, filename);
+      fs.writeFileSync(filepath, markdown, "utf-8");
+      return;
+    }
+
+    // jsonl 文件并解析
+    const content = fs.readFileSync(transcript_path, "utf-8");
+    const lines = content.trim().split("\n");
+
+    // 提取所有回答
+    const assistants = [];
+    for (const line of lines) {
+      try {
+        const record = JSON.parse(line);
+        if (
+          record.sessionId === session_id &&
+          record.type === "assistant" &&
+          record.message
+        ) {
+          assistants.push(record);
+        }
+      } catch (err) {
+        // 忽略解析错误的行
+        continue;
+      }
+    }
 
     // 提取最后一次助手回答
-    const messages = hookData.messages || [];
-    const lastAssistantMessage = messages
-      .slice()
-      .reverse()
-      .find((msg) => msg.role === "assistant");
+    const lastAssistantMessage = assistants[assistants.length - 1].message;
 
     if (!lastAssistantMessage) {
       // 没有找到助手回答，直接通过
@@ -45,30 +103,15 @@ process.stdin.on("end", () => {
 
     // 如果没有文本内容，跳过记录
     if (!responseText || responseText.trim().length === 0) {
-      console.log(inputData);
+      console.log(lastAssistantMessage);
       return;
     }
 
-    // 生成时间戳文件名
-    const now = new Date();
-    const timestamp = now
-      .toISOString()
-      .replace(/T/, "-")
-      .replace(/:/g, "-")
-      .replace(/\..+/, "");
-    const filename = `session-${timestamp}.md`;
-
-    // 确保会话目录存在
-    const sessionsDir = path.join(process.cwd(), ".claude", "sessions");
-    if (!fs.existsSync(sessionsDir)) {
-      fs.mkdirSync(sessionsDir, { recursive: true });
-    }
-
     // 构建 markdown 内容
-    const markdown = `# Claude 会话记录
+    const markdown = `
 **时间**: ${now.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}
 **文件**: ${filename}
-
+**session_id**: ${session_id}å
 ---
 
 ${responseText}
