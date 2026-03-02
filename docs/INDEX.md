@@ -1,6 +1,6 @@
 # 项目文档索引
 
-**最后更新**：2026-02-27
+**最后更新**：2026-03-02
 
 欢迎来到 My Skills 项目的文档中心。这里包含了项目的完整文档和开发指南。
 
@@ -93,21 +93,28 @@ my_skill/
 
 ## 常用命令
 
+<!-- AUTO-GENERATED: Scripts from package.json -->
+
+| 命令 | 说明 |
+|------|------|
+| `pnpm install` | 安装所有依赖 |
+| `pnpm dev:ocr` | 监视编译 OCR（开发模式） |
+| `pnpm build` | 编译并同步所有 Skills |
+| `pnpm build:ocr` | 仅编译 OCR Skill |
+| `pnpm sync` | 仅同步（不重新编译） |
+| `pnpm sync:ocr` | 仅同步 OCR Skill |
+| `pnpm ocr:cli` | 运行 OCR CLI 测试 |
+| `pnpm ocr:mcp` | 启动 OCR MCP 服务器 |
+
+**使用示例**：
+
 ```bash
-# 安装依赖
-pnpm install
-
-# 开发模式
-pnpm dev:ocr              # 监视编译 OCR
-
-# 构建
-pnpm build                # 编译并同步所有 Skills
-pnpm sync:ocr             # 仅同步 OCR Skill
-
-# 运行 OCR
-pnpm ocr:cli ./image.png  # CLI 模式
-pnpm ocr:mcp              # MCP 服务器模式
+pnpm ocr:cli ./image.png           # 识别图像文件
+pnpm ocr:cli --clipboard           # 从剪贴板识别
+pnpm ocr:cli ./image.jpg --lang chi_sim  # 指定语言
 ```
+
+<!-- /AUTO-GENERATED -->
 
 ## 开发工作流
 

@@ -2,7 +2,6 @@
   "name": "my-skills",
   "version": "1.0.0",
   "description": "Claude Code Skills collection",
-  "type": "module",
   "scripts": {
     "build": "npm run build:ocr && npm run sync",
     "build:ocr": "tsc -p dev/ocr/tsconfig.json",

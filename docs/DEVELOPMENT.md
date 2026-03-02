@@ -1,7 +1,7 @@
 # 开发指南
 
-**最后更新**：2026-02-27  
-**类型**：开发指南  
+**最后更新**：2026-03-02
+**类型**：开发指南
 **难度**：初级 → 高级
 
 ## 快速开始
@@ -32,19 +32,32 @@ pnpm build
 
 ## 项目命令速览
 
-```bash
-# 核心命令
-pnpm install          # 安装所有依赖
-pnpm build            # 编译所有 Skill 并同步
-pnpm sync             # 仅同步（不重新编译）
+<!-- AUTO-GENERATED: Scripts from package.json -->
 
-# OCR Skill 特定命令
-pnpm dev:ocr          # 监视编译 OCR（开发模式）
-pnpm build:ocr        # 仅编译 OCR
-pnpm sync:ocr         # 仅同步 OCR
-pnpm ocr:cli          # 运行 OCR CLI（快速测试）
-pnpm ocr:mcp          # 启动 OCR MCP 服务器
+| 命令 | 描述 | 用途 |
+|------|------|------|
+| `pnpm install` | 安装所有依赖 | 首次设置或依赖更新后运行 |
+| `pnpm build` | 编译所有 Skill 并同步 | 完整构建（OCR + 同步） |
+| `pnpm build:ocr` | 仅编译 OCR Skill | 仅编译 TypeScript 为 JavaScript |
+| `pnpm dev:ocr` | 监视编译 OCR（开发模式） | 自动重新编译，适合开发时使用 |
+| `pnpm sync` | 同步所有 Skill 到部署目录 | 将编译产物同步到 .claude/skills/ 等 |
+| `pnpm sync:ocr` | 仅同步 OCR Skill | 快速同步单个 Skill |
+| `pnpm ocr:cli` | 运行 OCR CLI | 快速测试 OCR 功能 |
+| `pnpm ocr:mcp` | 启动 OCR MCP 服务器 | 测试 MCP 集成 |
+
+**快速参考**：
+
+```bash
+# 核心开发流程
+pnpm install          # 1. 安装依赖（首次）
+pnpm dev:ocr          # 2. 开启监视编译（终端1）
+pnpm sync:ocr         # 3. 同步文件（编译完成后，终端2）
+
+# 生产构建
+pnpm build            # 完整构建并同步所有 Skill
 ```
+
+<!-- /AUTO-GENERATED -->
 
 ## 创建新 Skill
 
