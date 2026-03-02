@@ -1,0 +1,55 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const ti=i.tool_input||{};const p=ti.file_path||'';const added=[ti.new_string,ti.content,ti.text].filter(v=>typeof v==='string').join('\\n');if(!/(TODO|FIXME)/.test(added)){console.log(d);return}console.error('[Hook] Warning: adding TODO/FIXME comment'+(p?' in '+p:'')+'.');console.error('[Hook] Please confirm it is intentional and linked to a tracked task.')}catch{}console.log(d)})\""
+          }
+        ],
+        "description": "Warn when adding TODO/FIXME comments after Edit/Write"
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact.js\""
+          }
+        ],
+        "description": "Save state before context compaction"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \\\"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/suggest-compact.js\\\""
+          }
+        ],
+        "description": "Suggest manual compaction at logical intervals"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "分析你在本轮对话中的所有回答内容。统计是否包含大量的 Markdown 格式解释文档（例如：超过 50 行的结构化文档、多个表格、详细的代码示例和解释等）。\n\n如果检测到大量文档内容，返回 JSON 格式：\n{\n  \"decision\": \"block\",\n  \"reason\": \"检测到大量 Markdown 文档内容\",\n  \"systemMessage\": \"你的回答包含大量文档内容。请主动询问用户：'检测到回答中包含大量文档内容，是否需要保存为 .md 文件？如果需要，请提供保存路径。'等待用户回复后，如果用户同意并提供路径，使用 Write 工具保存文件。\"\n}\n\n如果回答内容较少（少于 50 行）或只是简单对话，返回：\n{\n  \"decision\": \"approve\"\n}"
+          }
+        ],
+        "description": "Ask to save MD docs when large content detected"
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "hookify@claude-plugins-official": true
+  }
+}
