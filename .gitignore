@@ -13,3 +13,4 @@ dev/*/dist
 !.claude/settings.json
 !.claude/agents
 !.claude/commands
+!.claude/scripts
