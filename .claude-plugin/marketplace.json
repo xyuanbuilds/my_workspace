@@ -1,0 +1,13 @@
+{
+  "name": "xy-plugins",
+  "owner": {
+    "name": "xyuanbuilds"
+  },
+  "plugins": [
+    {
+      "name": "ocr",
+      "description": "Extract text from images using OCR",
+      "source": "./plugins/ocr"
+    }
+  ]
+}

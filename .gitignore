@@ -3,6 +3,9 @@ node_modules
 # Build outputs (each skill has its own dist)
 dev/*/dist
 
+# Plugin build outputs
+plugins/
+
 # Tesseract language data
 *.traineddata
 *.traineddata.gz

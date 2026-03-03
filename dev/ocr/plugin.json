@@ -1,0 +1,7 @@
+{
+  "name": "ocr",
+  "version": "1.0.0",
+  "description": "Extract text from images using OCR. Supports file and clipboard input with multiple languages.",
+  "author": { "name": "xyuanbuilds" },
+  "keywords": ["ocr", "tesseract", "image-to-text", "clipboard"]
+}

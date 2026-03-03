@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "ocr": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["./dev/ocr/dist/mcp-server.js"]
-    }
-  }
-}
