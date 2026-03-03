@@ -1,5 +1,15 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \".claude/scripts/session-start.js\""
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -56,5 +66,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-marketplace": true
   }
 }
