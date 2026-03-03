@@ -1,148 +1,218 @@
-# My Skills
+# xy-plugins Workspace
 
-用于开发和管理 Claude Code Skill 的工作区。这是一个完整的 Claude Code Skills 开发框架，用于创建、测试和部署可在 Claude Code 环境中使用的技能模块。
+**A Claude Code Plugin Marketplace repository** for developing, building, and sharing Claude Code plugins.
 
-**快速链接**：[项目文档](docs/INDEX.md) | [架构](docs/ARCHITECTURE.md) | [开发指南](docs/DEVELOPMENT.md) | [代码地图](docs/CODEMAPS/INDEX.md)
+**Status:** Production-ready | **Last Updated:** 2026-03-03
 
-## 功能亮点
+## 🎯 Overview
 
-✨ **现已实现**：
+xy-plugins is a monorepo that manages multiple Claude Code plugins:
 
-- ✅ OCR Skill - 支持图像文字识别（多语言、预处理、剪贴板）
-- ✅ 三入口模式 - CLI / MCP / Library 调用
-- ✅ 自动同步系统 - 支持多目录同步到 Claude Code
-- ✅ TypeScript 开发 - 完整的类型系统和构建工具链
-- ✅ Git Hooks - 自动化提交前检查
-- ✅ 完整文档 - 架构、开发指南、代码地图
+- **OCR Plugin** — Extract text from images using Tesseract.js
+- Plugin scaffolding tools for rapid development
+- Plugin marketplace registration system
 
-## 项目结构
+## 🚀 Quick Start
+
+### Build All Plugins
+
+```bash
+pnpm build:all
+```
+
+### Build Specific Plugin
+
+```bash
+pnpm build:plugin ocr
+```
+
+### Test Plugin Locally
+
+```bash
+pnpm test:plugin ocr
+```
+
+### Create New Plugin
+
+```bash
+pnpm create-plugin my-skill --type skill
+```
+
+### Watch & Develop
+
+```bash
+pnpm dev ocr
+```
+
+## 📁 Directory Structure
 
 ```
-my_skill/
-├── dev/                          # 开发目录
-│   └── {skill-name}/             # 单个 Skill 的开发目录
-│       ├── src/                  # TypeScript 源代码
-│       │   ├── index.ts          # 模块入口
-│       │   ├── cli.ts            # CLI 入口
-│       │   ├── mcp-server.ts     # MCP 服务器
-│       │   ├── package.json      # scripts 依赖声明
-│       │   └── ...               # 其他业务模块
-│       ├── dist/                 # 编译输出（自动生成，勿手动修改）
-│       ├── SKILL.md              # Skill 说明文档
-│       ├── CLAUDE.md             # 开发指南
-│       └── tsconfig.json         # TypeScript 编译配置
-│
-├── skills/                       # 打包输出目录（sync 产物）
-│   └── {skill-name}/
-│       ├── SKILL.md
-│       └── scripts/              # 编译后的 JS 文件及依赖配置
-│           ├── package.json
-│           └── *.js
-│
-├── scripts/
-│   └── sync-skills.js            # 构建产物同步脚本
+xy-plugins/
+├── .claude-plugin/
+│   └── marketplace.json          # Marketplace registration
+├── dev/
+│   └── ocr/                      # OCR plugin source
+│       ├── src/                  # TypeScript source
+│       ├── SKILL.md              # Skill documentation
+│       ├── plugin.json           # Plugin metadata
+│       ├── mcp.json              # MCP server config (template)
+│       └── tsconfig.json         # TypeScript config
+├── plugins/                      # Built plugins (output)
+│   └── ocr/                      # Compiled OCR plugin
+├── templates/
+│   ├── skill/                    # Skill plugin template
+│   ├── hooks/                    # Hooks plugin template
+│   └── mcp/                      # MCP plugin template
+├── scripts/                      # Scaffolding tools
+│   ├── build.js                  # Build & package plugins
+│   ├── create.js                 # Create new plugins
+│   ├── validate.js               # Validate plugin structure
+│   ├── dev.js                    # Watch mode compilation
+│   └── test-plugin.js            # Load plugin in Claude Code
 ├── package.json
-└── tsconfig.json
+├── tsconfig.json
+└── README.md
 ```
 
-sync 脚本会将产物同步至以下三个目录，结构相同：
+## 📦 Plugins
 
-- `skills/` — 本仓库的输出目录
-- `.claude/skills/` — Claude Code 读取目录
-- `.agents/skills/` — 其他 Agent 系统读取目录
+### OCR Plugin
 
-## 当前 Skills
+- **Type:** Skill
+- **Location:** `dev/ocr/` (source) → `plugins/ocr/` (built)
+- **Features:** Text extraction from images, clipboard support, multi-language
+- **Dependencies:** tesseract.js, canvas
+- **Status:** ✅ Built & validated
 
-### OCR - 光学字符识别
+## 🛠️ Commands Reference
 
-从截图、照片或图像文件中提取文本。
+| Command         | Usage                                                | Description                       |
+| --------------- | ---------------------------------------------------- | --------------------------------- |
+| `build:all`     | `pnpm build:all`                                     | Build all plugins                 |
+| `build:plugin`  | `pnpm build:plugin <name>`                           | Build specific plugin             |
+| `create-plugin` | `pnpm create-plugin <name> --type skill\|hooks\|mcp` | Create new plugin scaffold        |
+| `dev`           | `pnpm dev <name>`                                    | Watch mode TypeScript compilation |
+| `test:plugin`   | `pnpm test:plugin <name>`                            | Load plugin in Claude Code        |
+| `validate`      | `pnpm validate [name]`                               | Validate plugin structure         |
 
-**功能**：
+## 🏗️ Architecture
 
-- 多种图像格式支持（PNG, JPG, BMP 等）
-- 多语言识别（中文、英文、日文、韩文等）
-- 从剪贴板读取图像（macOS）
-- 图像预处理和增强（灰度化、二值化、去噪、对比度增强）
-- 多策略识别（提升准确度）
+### Plugin Development Workflow
 
-**位置**：`dev/ocr/src/` (源码) | `skills/ocr/scripts/` (打包)
+```
+dev/<name>/src/          (TypeScript source)
+    ↓ (tsc compile)
+dev/<name>/dist/         (JavaScript output)
+    ↓ (build.js package)
+plugins/<name>/          (Production plugin)
+    ├── .claude-plugin/plugin.json
+    ├── skills/<name>/     (skill type)
+    ├── hooks/             (hooks type)
+    ├── scripts/           (compiled JS)
+    └── node_modules/      (production deps)
+    ↓ (test:plugin)
+Claude Code (--plugin-dir)
+```
 
-**使用示例**：
+### Plugin Types
+
+1. **Skill** — Claude Code skill/tool integration
+   - Requires: `SKILL.md`, `plugin.json`, `src/index.ts`
+   - Output: `skills/<name>/scripts/` + SKILL.md
+
+2. **Hooks** — Pre/post action hooks for Claude Code workflows
+   - Requires: `hooks.json`, `plugin.json`
+   - Output: `hooks/hooks.json` + scripts
+
+3. **MCP** — Model Context Protocol server
+   - Requires: `mcp.json`, `plugin.json`, `src/mcp-server.ts`
+   - Output: `.mcp.json` + scripts
+
+## 📖 Plugin Manifest (plugin.json)
+
+Every plugin must include `plugin.json`:
+
+```json
+{
+  "name": "ocr",
+  "version": "1.0.0",
+  "description": "Extract text from images using OCR",
+  "author": { "name": "xyuanbuilds" },
+  "keywords": ["ocr", "image-to-text"]
+}
+```
+
+## 🔧 Plugin Installation
+
+### Option 1: Temporary Load (Development)
 
 ```bash
-node scripts/cli.js ./screenshot.png --lang chi_sim
-node scripts/cli.js --clipboard --auto
+# Load plugin for current Claude Code session
+claude --plugin-dir ./plugins/ocr
 ```
 
-详见 [OCR 代码地图](docs/CODEMAPS/ocr.md)
+### Option 2: Persistent (Project-Level)
 
-## Skill 的基本组成
+Edit `.claude/settings.json`:
 
-每个 Skill 由以下部分构成：
+```json
+{
+  "plugins": [{ "name": "ocr", "local": "./plugins/ocr" }]
+}
+```
 
-### `SKILL.md`
-
-面向 Agent 的说明文档，描述该 Skill 的用途、调用方式和参数说明。Agent 通过读取此文件了解如何使用该 Skill。
-
-### `scripts/`
-
-运行时所需的编译产物目录，包含：
-
-- 各业务逻辑模块（`*.js`）
-- `cli.js` — 命令行入口，供 Agent 通过子进程调用
-- `mcp-server.js` — （可选）MCP 服务器入口，供支持 MCP 协议的 Agent 调用
-- `package.json` — 声明运行时依赖，安装后生成 `node_modules/`
-
-## 常用命令
-
-### 核心命令
+### Option 3: From Marketplace (When Published)
 
 ```bash
-# 安装依赖
-pnpm install
-
-# 编译并同步所有 Skill
-pnpm build
-
-# 仅同步（不重新编译）
-pnpm sync
-
-# 监视模式开发（自动重新编译）
-pnpm dev:ocr
+claude plugin install ocr@xy-plugins
 ```
 
-### OCR Skill 特定命令
+## ✅ Validation
+
+Before shipping, always validate:
 
 ```bash
-# 构建 OCR Skill
-pnpm build:ocr
+# Validate OCR plugin
+pnpm validate ocr
 
-# 同步 OCR Skill
-pnpm sync:ocr
-
-# CLI 快速测试
-pnpm ocr:cli ./image.png
-pnpm ocr:cli --clipboard --lang chi_sim
-
-# MCP 服务器（用于集成测试）
-pnpm ocr:mcp
+# Validate all built plugins
+pnpm validate
 ```
 
-### 示例用法
+Checks:
 
-```bash
-# 从文件识别文本
-pnpm ocr:cli ./screenshot.png
+- ✓ `plugin.json` exists and is valid JSON
+- ✓ `plugin.json` contains required fields
+- ✓ Correct structure for plugin type (SKILL.md, hooks.json, etc.)
+- ✓ No absolute paths in JSON files
 
-# 从剪贴板识别（macOS）
-pnpm ocr:cli --clipboard
+## 📚 Documentation
 
-# 指定语言识别
-pnpm ocr:cli ./image.jpg --lang chi_sim
+- [Plugin Development Guide](docs/GUIDES/PLUGIN_DEVELOPMENT.md) — Create and build plugins
+- [Architecture Design](docs/ARCHITECTURE.md) — System design and decisions
+- [Marketplace Setup](docs/GUIDES/MARKETPLACE.md) — Publishing plugins to marketplace
+- [Codemaps](docs/CODEMAPS/INDEX.md) — Codebase exploration guides
 
-# 启用自动预处理
-pnpm ocr:cli ./document.png --auto
+## 🔄 Dependencies
 
-# 多策略识别（提升准确度）
-pnpm ocr:cli ./complex.png --multi-strategy
-```
+**Production:**
+
+- `@modelcontextprotocol/sdk` — MCP server SDK
+- `tesseract.js` — OCR engine
+- `canvas` — Image processing
+
+**Development:**
+
+- `typescript` — TypeScript compiler
+- `@types/node` — Node.js type definitions
+
+Install all: `pnpm install`
+
+## 📝 License
+
+MIT
+
+---
+
+**Repository:** [xyuanbuilds/my_skills](https://github.com/xyuanbuilds/my_skills)  
+**Maintained by:** xyuanbuilds
