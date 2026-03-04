@@ -11,7 +11,7 @@
  * - 要求用户确认是否继续
  */
 
-const { readStdinJson, log, output } = require("../lib/utils");
+import { readStdinJson, log, output } from "../lib/utils.js";
 
 /**
  * 检查命令是否是 git 相关命令

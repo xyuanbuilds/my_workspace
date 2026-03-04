@@ -5,8 +5,8 @@
  * 在每次 Claude 回答结束时自动调用
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 // 从 stdin 读取 hook 数据
 let inputData = "";

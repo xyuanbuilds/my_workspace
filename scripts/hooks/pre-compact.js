@@ -8,8 +8,8 @@
  * preserve important state that might get lost in summarization.
  */
 
-const path = require("path");
-const {
+import path from "path";
+import {
   getSessionsDir,
   getDateTimeString,
   getTimeString,
@@ -17,7 +17,7 @@ const {
   ensureDir,
   appendFile,
   log,
-} = require("../lib/utils");
+} from "../lib/utils.js";
 
 async function main() {
   const sessionsDir = getSessionsDir();
