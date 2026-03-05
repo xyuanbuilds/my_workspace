@@ -17,3 +17,7 @@ plugins/
 !.claude/agents
 !.claude/commands
 !.claude/scripts
+!.claude/skills
+
+# history
+.specstory

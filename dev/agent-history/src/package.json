@@ -1,0 +1,12 @@
+{
+  "name": "agent-history",
+  "version": "1.0.0",
+  "description": "CLI tool to discover and export AI coding assistant conversation history",
+  "type": "module",
+  "scripts": {
+    "setup": "pnpm install"
+  },
+  "dependencies": {
+    "commander": "^13.0.0"
+  }
+}
